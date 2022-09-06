@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <form action="#" method="post" id="new_staff">
+    <input type="text" name="email" id="email" placeholder="Email">
+    <input type="text" name="name" id="name" placeholder="Name">
+    <input type="submit" value="Submit">
+  </form>
+  <p id="response"></p>
+</body>
+<script>
+  let form = document.getElementById('new_staff');
+  let para = document.getElementById('response');
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+
+    let request = new XMLHttpRequest();
+    let data = new FormData(form);
+
+    request.open('POST', '/api/staff_members');
+
+    request.addEventListener('load', () => {
+
+      if (request.status === 201) {
+        let response = JSON.parse(request.response);
+        para.textContent = `Staff member added : Staff ID# is ${response.id}`;
+        form.reset();
+      }
+
+      if (request.status === 400) {
+        para.textContent = request.responseText;
+      }
+
+    })
+
+    request.send(data);
+  })
+
+
+</script>
+</html>

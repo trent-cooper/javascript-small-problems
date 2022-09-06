@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <style>
+
+  </style>
+</head>
+<body>
+  <button id="add_schedule">Add More Schedules</button>
+  <form action="#" method="post" id="staff_form">
+    <fieldset id="schedule_1">
+      <legend>Schedule 1</legend>
+      <label for="instructors">Staff Name</label>
+      <select name="instructors">
+      </select>
+      <br><br>
+      <label for="date">Date</label>
+      <input type="date" name="date">
+      <br><br>
+      <label for="time">Time</label>
+      <input type="time" name="time">
+    </fieldset>
+    <button type="submit">Submit</button>
+  </form>
+</body>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    let form = document.getElementById('staff_form');
+    let addSchedule = document.getElementById('add_schedule');
+    let staff = [];
+    let schedCount = 1;
+
+    function getStaff() {
+      let staffList = document.querySelector('fieldset select');
+      let request = new XMLHttpRequest();
+
+      request.open('GET', '/api/staff_members');
+      request.responseType = 'json';
+      let response;
+
+      request.addEventListener('load', () => {
+        let response = request.response;
+        response.forEach(ele => {
+          let option = new Option(ele.name);
+          option.setAttribute('name', ele.id);
+          staffList.appendChild(option);
+
+          staff.push(ele.name);
+        })
+      });
+
+      request.send();
+    }
+
+    addSchedule.addEventListener('click', (e) => {
+      e.preventDefault();
+      let current = document.getElementById(`schedule_${schedCount}`);
+      schedCount++;
+
+      let copy = document.getElementById('schedule_1').cloneNode(true);
+      copy.id = `schedule_${schedCount}`;
+      copy.querySelector('legend').textContent = `Schedule ${schedCount}`;
+      
+      current.insertAdjacentElement("afterend", copy);
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      let forms = document.querySelectorAll('fieldset');
+      let formData = new FormData(form);
+
+      let instructors = formData.getAll('instructors');
+      instructors = instructors.map(ele => staff.indexOf(ele) + 1);
+      let dates = formData.getAll('date');
+      let times = formData.getAll('time');
+
+      let data = [];
+
+      instructors.forEach((_, idx) => {
+        let obj = {
+          staff_id: instructors[idx],
+          date: dates[idx],
+          time: times[idx],
+        };
+
+        data.push(obj);
+      });
+
+      let request = new XMLHttpRequest();
+      request.open('POST', '/api/schedules');
+      request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+      
+      request.addEventListener('load', () => {
+        if (request.status === 201) {
+          alert('Schedules Added');
+        } else if (request.status === 400) {
+          alert(request.statusText);
+        }
+      })
+
+      request.send(JSON.stringify({schedules: data}));
+    })
+
+    getStaff()
+  });
+</script>
+</html>

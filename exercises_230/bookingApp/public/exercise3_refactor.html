@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+  <script id="form_template" type="text/x-handlebars">
+    <fieldset id="schedule_{{count}}">
+      <legend>Schedule {{count}}</legend>
+      <label for="instructor_{{count}}">Staff Name</label>
+      <select name="instructor_{{count}}" id="instructor_{{count}}">
+        {{#each instructors}}
+        <option value="{{id}}">{{name}}</option>
+        {{/each}}
+      </select>
+      <br><br>
+      <label for="date_{{count}}">Date</label>
+      <input type="date" name="date_{{count}}" id="date_{{count}}">
+      <br><br>
+      <label for="time_{{count}}">Time</label>
+      <input type="time" name="time_{{count}}" id="time_{{count}}">
+    </fieldset>
+  </script>
+</head>
+<body>
+  <button id="add_schedule">Add More Schedules</button>
+  <form action="#" method="post" id="staff_form">
+    <fieldset id="schedule_1">
+      <legend>Schedule 1</legend>
+      <label for="instructor_1">Staff Name</label>
+      <select name="instructor_1" id="instructor_1">
+      </select>
+      <br><br>
+      <label for="date_1">Date</label>
+      <input type="date" name="date_1" id="date_1">
+      <br><br>
+      <label for="time_1">Time</label>
+      <input type="time" name="time_1" id="time_1">
+    </fieldset>
+    <button type="submit">Submit</button>
+  </form>
+</body>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    let form_template = Handlebars.compile(document.getElementById('form_template').innerHTML);
+    let form = document.getElementById('staff_form');
+    let addSchedule = document.getElementById('add_schedule');
+    let staff = [];
+    let schedCount = 1;
+
+    (() => {
+      let staffList = document.querySelector('fieldset select');
+      let request = new XMLHttpRequest();
+
+      request.open('GET', '/api/staff_members');
+      request.responseType = 'json';
+      let response;
+
+      request.addEventListener('load', () => {
+        let response = request.response;
+        response.forEach(ele => {
+          let option = new Option(ele.name);
+          option.setAttribute('value', ele.id);
+          staffList.appendChild(option);
+
+          let obj = {
+            name: ele.name,
+            id: ele.id,
+          }
+
+          staff.push(obj);
+        })
+      });
+
+      request.send();
+    })();
+
+    addSchedule.addEventListener('click', (e) => {
+      e.preventDefault();
+      let current = document.getElementById(`schedule_${schedCount}`);
+      schedCount++;
+
+      let newSched = form_template({ count: schedCount, instructors: staff })
+      
+      current.insertAdjacentHTML("afterend", newSched);
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      let data = [];
+
+      for (let count = 1; count <= schedCount; count++) {
+        let obj = {
+          staff_id: form[`instructor_${count}`].value,
+          date: form[`date_${count}`].value,
+          time: form[`time_${count}`].value,
+        }
+        data.push(obj);
+      }
+
+      let request = new XMLHttpRequest();
+      request.open('POST', '/api/schedules');
+      request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+      
+      request.addEventListener('load', () => {
+        if (request.status === 201) {
+          alert('Schedules Added');
+        } else if (request.status === 400) {
+          alert('Please ensure all options filled-out');
+        }
+      })
+
+      request.send(JSON.stringify({schedules: data}));
+    })
+  });
+</script>
+</html>

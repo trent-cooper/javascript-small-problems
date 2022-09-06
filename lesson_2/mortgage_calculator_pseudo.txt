@@ -1,0 +1,29 @@
+Ask for loan amount
+Ask for APR
+  Convert APR to Monthly interest rate
+Ask for loan duration in years
+  Convert duration to months
+Calculate loan duration in months
+Use formula to calculate monthly payment
+  Make sure payment outputs to second decimal number
+Print monthly payment amount
+
+
+
+START
+
+GET loanAmount = loan input in dollars, rounded to second decimal
+
+GET APR as full percentage
+
+SET monthlyInterest = APR / 12
+
+GET loan duration in years
+
+SET loanDuration = loan duration * 12
+
+SET monthlyPayment = loanAmount * ( monthlyInterest / ( 1 - Math.pow( ( 1 + monthlyInterest ), ( -loanDuration ))))
+
+PRINT monthlyPayment
+
+END

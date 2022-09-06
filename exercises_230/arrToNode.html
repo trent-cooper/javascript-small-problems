@@ -1,0 +1,23 @@
+
+<script>
+
+  function arrayToNodes(arr) {
+    let node = document.createElement(arr[0].toLowerCase());
+    let children = arr[1];
+
+    makeMore(node, children);
+
+    console.log(node);
+  }
+
+  function makeMore(parent, children) {
+    children.forEach(child => {
+      let node = document.createElement(child[0].toLowerCase());
+      let children = child[1];
+      parent.appendChild(node);
+      makeMore(node, children);
+    })
+  }
+
+</script>
+

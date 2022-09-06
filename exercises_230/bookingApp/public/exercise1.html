@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Available Schedules</title>
+</head>
+<body>
+  
+</body>
+<script>
+  function getSchedules() {
+    let request = new XMLHttpRequest();
+
+    request.open('GET', '/api/schedules');
+    // request.timeout = 5000;
+    request.responseType = 'json';
+
+    let schedule = {};
+
+    request.addEventListener('load', () => {
+      let response = request.response;
+
+      if (response.length === 0) {
+        alert('There are no available appointements.');
+        return;
+      }
+
+      response.forEach(({staff_id}) => {
+        (schedule[staff_id]) ? schedule[staff_id] += 1 : schedule[staff_id] = 1;
+      })
+
+      let message = Object.entries(schedule).reduce((acc, curr) => {
+        return acc + `Staff ${curr[0]}: ${curr[1]}\n`
+      }, '');
+
+      alert(message);
+    })
+
+    request.addEventListener('timeout', () => {
+      alert('timeout!')
+    })
+
+    request.addEventListener('loadend', () => {
+      alert('Request completed.')
+    });
+
+    request.send();
+  }
+
+
+  // async function getSchedules() {
+  //   let schedObj = {};
+
+  //   let schedData = await fetch('/api/schedules')
+  //     .then(response => {
+  //       if (response.ok) {
+  //         console.log('Request Succesful - Schedule listed below:');
+  //       } else {
+  //         console.log('Request timed out');
+  //       }
+  //       return response.json()
+  //     })
+  //     .then(data => data);
+
+  //   let schedAvailable = schedData.filter(sched => !sched.student_email);
+    
+  //   schedAvailable.forEach(sched => {
+  //     let id = `Staff ${sched.staff_id}`;
+  //     (schedObj[id]) ? schedObj[id] += 1 : schedObj[id] = 1;
+  //   })
+
+
+  //   if (Object.keys(schedObj).length === 0) {
+  //     console.log('There are no available schedules currently.')
+  //   } else {
+  //     alert(schedObj);
+  //   }
+  // }
+</script>
+</html>

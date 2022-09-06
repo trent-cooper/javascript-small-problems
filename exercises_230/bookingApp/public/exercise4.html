@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Booking</title>
+</head>
+<body>
+  <h1>Schedules</h1>
+  <form action="#" method="post" id="schedForm">
+    <fieldset>
+      <legend>New Schedule Form</legend>
+      <label for="schedules">Please select one schedule:</label>
+      <select name="schedules" id="schedules">
+
+      </select>
+      <br>
+      <label for="student_email">Email:</label>
+      <input type="email" name="student_email" id="student_email">
+      <input type="submit" value="Submit">
+    </fieldset>
+  </form>
+  <br>
+  <form action="#" method="post" id="studentForm" style="background-color: coral;" hidden="true">
+    <fieldset>
+      <legend>New Student Form:</legend>
+      <label for="email">Email:</label>
+      <input type="email" name="email" id="email">
+      <br>
+      <label for="student_name">Name:</label>
+      <input type="text" name="name" id="student_name">
+      <br>
+      <label for="booking_sequence">Booking Sequence:</label>
+      <input type="text" name="booking_sequence" id="booking_sequence">
+      <br>
+      <input type="submit" value="Submit">
+    </fieldset>
+  </form>
+</body>
+<script>
+  let staff = {};
+  let schedules;
+  let scheduleList = document.getElementById('schedules');
+  let scheduleForm = document.getElementById('schedForm');
+  let studentForm = document.getElementById('studentForm');
+
+  (() => {
+    let request = new XMLHttpRequest();
+    request.open('GET', '/api/staff_members');
+    request.responseType = 'json';
+
+    request.addEventListener('load', () => {
+      request.response.forEach(ele => {
+        staff[ele.id] = ele.name;
+      })
+
+      getSchedules();
+    })
+
+    request.send();
+  })();
+
+  function getSchedules() {
+    let request = new XMLHttpRequest();
+    request.open('GET', '/api/schedules');
+    request.responseType = 'json';
+
+    request.addEventListener('load', () => {
+      request.response.forEach(sched => {
+        let name = staff[sched.staff_id];
+        let option = new Option(`${name} | ${sched.date} | ${sched.time}`);
+        option.value = sched.id;
+        scheduleList.appendChild(option);
+      })
+    })
+
+    request.send();
+  };
+
+  scheduleForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    let data = new FormData(scheduleForm);
+    let id = scheduleForm['schedules'].value;
+    data.append('id', id);
+
+    let request = new XMLHttpRequest();
+    request.open('POST', '/api/bookings');
+
+    request.addEventListener('load', () => {
+      console.log(request.responseText)
+      if (request.status === 204) {
+        alert("You've succesfully booked your time-slot");
+        scheduleForm.reset();
+      } else if (request.responseText.includes('booked')) {
+        alert(request.responseText);
+      } else if (request.responseText.includes('booking_sequence')) {
+        alert(request.responseText);
+        let email = data.get('student_email');
+        let sequence = request.responseText.split(' ')[5];
+        displayNewStudentForm(email, sequence);
+      }
+    })
+
+    request.send(data);
+  });
+
+  function displayNewStudentForm(email, sequence) {
+    studentForm.removeAttribute('hidden');
+    studentForm['email'].value = email;
+    studentForm['booking_sequence'].value = sequence;
+
+    studentForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      let data = new FormData(studentForm);
+
+      let request = new XMLHttpRequest();
+      request.open('POST', '/api/students');
+
+      request.addEventListener('load', () => {
+        if (request.status === 201) {
+          alert(request.responseText);
+          scheduleForm.dispatchEvent(new Event('submit'));
+          studentForm.reset();
+          studentForm.setAttribute('hidden', true);
+        } else if (request.status === 403) {
+          alert('Booking sequence is missing or invalid.');
+        } else if (request.status === 400) {
+          alert(request.responseText);
+        }
+      })
+
+      request.send(data);
+    });
+  }
+</script>
+</html>

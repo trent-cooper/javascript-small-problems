@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Form Validation</title>
+  <script src="validation.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,400;1,300&display=swap');  </style>
+  <style>
+    html {
+      box-sizing: border-box;
+      font-family: 'Work Sans', sans-serif;
+      font-size: 15px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: inherit;
+    }
+
+    p {
+      display: inline-block;
+      margin: 0px;
+    }
+
+    .container {
+      width: 60%;
+      border: 1px solid black;
+      margin: 5px 20%;
+      border-radius: 10px;
+    }
+
+    form {
+      padding: 15px;
+      line-height: 25px;
+    }
+
+    .invalid_form {
+      border-color: rgb(196, 86, 86);
+    }
+
+    #submit {
+      margin-top: 10px;
+    }
+    
+    .form_input {
+      width: 50%;
+    }
+
+    .credit_input {
+      width: 45px;
+    }
+
+    .invalid {
+      border-radius: 2px;
+      border: 1px solid rgb(196, 86, 86);
+    }
+
+    .message {
+      display: inline-block;
+      margin: 0px;
+      font-weight: 300;
+      font-style: italic;
+      color: red;
+    }
+
+    #form_message { 
+      display: block;
+      height:18px;
+      text-align: center;
+      font-weight: 400;
+      color: red;
+      margin-bottom: 5px;
+      margin-top: 50px;
+    }
+
+    h2 {
+      display: block;
+      text-align: center;
+      font-size: 15px;
+      margin-top: 20px;
+      margin-bottom: 5px;
+    }
+
+    #query_string {
+      display: block;
+      text-align: center;
+      font-weight: 300;
+      font-style: italic;
+      color: red;
+    }
+  </style>
+  <link rel="stylesheet" href="normalize.css">
+</head>
+<body>
+  <p id="form_message"></p>
+  <div class="container">
+    <form action="#" method="post" novalidate>
+      <div id="main_form">
+        <label for="first_name">First Name</label>
+        <br>
+        <input type="text" name="first_name" id="first_name" class="form_input alpha_input" required>
+        <p class="message"></p>
+        <br>
+        <label for="last_name">Last Name</label>
+        <br>
+        <input type="text" name="last_name" id="last_name" class="form_input alpha_input" required>
+        <p class="message"></p>
+        <br>
+        <label for="email">Email</label>
+        <br>
+        <input type="email" name="email" id="email" class="form_input" required pattern=".+@.+">
+        <p class="message"></p>
+        <br>
+        <label for="password">Password</label>
+        <br>
+        <input type="password" name="password" id="password" class="form_input" minlength="10" required>
+        <p class="message"></p>
+        <br>
+        <label for="phone">Phone #</label>
+        <br>
+        <input type="tel" name="phone" id="phone" class="form_input" placeholder="xxx-xxx-xxxx" pattern="^\d{3}-\d{3}-\d{4}$">
+        <p class="message"></p>
+        <br>
+      </div>
+      <div>
+        <label for="credit_card">Credit Card</label>
+        <br>
+        <input type="text" name="credit_card" class="credit_input num_input" maxlength="4">
+        <input type="text" name="credit_card" class="credit_input num_input" maxlength="4">
+        <input type="text" name="credit_card" class="credit_input num_input" maxlength="4">
+        <input type="text" name="credit_card" class="credit_input num_input" maxlength="4">
+        <p class="message" id="credit_message"></p>
+        <br>
+      </div>
+      <input type="submit" value="Sign Up" id="submit">
+    </form>
+  </div>
+  <h2></h2>
+  <p id="query_string"></p>
+</body>
+</html>

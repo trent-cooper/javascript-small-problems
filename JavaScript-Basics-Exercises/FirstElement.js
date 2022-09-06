@@ -1,0 +1,1 @@
+let first = (array) => array[0];

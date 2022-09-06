@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <style>
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Bookings</h1>
+  <ul id="dates">
+  </ul>
+</body>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    let list = document.getElementById('dates');
+
+    (() => {
+      let request = new XMLHttpRequest();
+      request.open('GET', '/api/bookings');
+      request.responseType = 'json';
+      request.send();
+      let dates;
+
+      request.addEventListener('load', () => {
+        dates = request.response;
+        dates.forEach(date => {
+          let li = document.createElement('LI');
+          li.textContent = date;
+          list.appendChild(li);
+        })
+        getBookings();
+      })
+    })();
+
+    function getBookings() {
+      let dates = list.children;
+      
+      [...dates].forEach(date => {
+        let dateString = date.textContent;
+
+        let request = new XMLHttpRequest();
+        request.open('GET', `/api/bookings/${dateString}`);
+        request.responseType = 'json';
+        request.send();
+
+        request.addEventListener('load', () => {
+          let bookings = request.response;
+          let ul = document.createElement('UL');
+          ul.classList.add('hidden');
+
+          bookings.forEach(booking => {
+            let li = document.createElement('LI');
+            li.textContent = `${booking[0]} | ${booking[1]} | ${booking[2]}`;
+            ul.appendChild(li);
+          })
+
+          date.appendChild(ul);
+        })
+      })
+    }
+
+    list.addEventListener('click', (e) => {
+      if (e.target.parentElement === list) {
+        e.target.firstElementChild.classList.toggle('hidden');
+      }
+    })
+
+  })
+</script>
+</html>

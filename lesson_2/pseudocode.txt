@@ -1,0 +1,67 @@
+Ask user for first number
+Ask user for second number
+Add numbers together
+Print result to terminal
+
+START
+
+SET number1 = GET first number from user
+
+SET number2 = GET second number from user
+
+SET output = number1 + number2
+
+PRINT output
+
+END
+
+
+---
+
+Get string array
+Create empty string for adding array strings to
+Iterate over array, concating each element to the empty string
+Print new string to terminal
+
+START
+
+GET stringArray
+
+SET newString = ""
+
+WHILE iterator < array length
+  SET stringArray += current index string
+  iterator += 1
+
+PRINT newString
+
+END
+
+
+---
+
+Get integer array
+Create empty array for storing every other element
+Create a loop to iterate over the array
+Use If/Else logic to address elements with odd index numbers
+If Index number is odd, push element into new array
+If index is even, skip over element and continue loop
+Print new array to terminal
+
+START
+
+GET integerArray
+
+SET newArray = []
+
+WHILE iterator < array length
+  IF integerArray[iterator] is odd
+    push current integerArray element into newArray
+  IF integerArray[iterator] is even
+    skip to the next iteration
+
+  iterator += 1
+
+PRINT newArray
+
+END
